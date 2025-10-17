@@ -11,7 +11,7 @@ export async function checkHealth(): Promise<boolean> {
   }
 }
 
-interface Transaction {
+export interface Transaction {
   id: string; // UUID as string
   user_id: string; // UUID as string
   amount: number;
@@ -80,4 +80,15 @@ function createFilterParams(filters: TransactionFilters): URLSearchParams {
     params.append("cursor", filters.cursor);
   }
   return params;
+}
+
+export async function getUsers(): Promise<string[] | undefined> {
+  try {
+    const url = `${BASE_URL}/users`;
+    const response = await fetch(url);
+    const data = await response.json();
+    return data["users"];
+  } catch (err) {
+    console.error("Error fetching users: ", err);
+  }
 }

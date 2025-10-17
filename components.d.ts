@@ -9,5 +9,6 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     HealthChecker: typeof import('./src/components/HealthChecker.vue')['default']
+    TransactionTable: typeof import('./src/components/TransactionTable.vue')['default']
   }
 }
