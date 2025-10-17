@@ -64,6 +64,19 @@
       :loading="isLoading"
       height="600"
     >
+      <template #item.txn_date="{ item }">
+        {{ new Date(item.txn_date).toLocaleString() }}
+      </template>
+
+      <template #item.amount="{ item }">
+        <template v-if="item.meta_data?.is_anomaly">
+          <v-icon color="error" v-tooltip="'Anomalous transaction'">
+            mdi-alert
+          </v-icon>
+        </template>
+        {{ item.amount.toLocaleString() }}
+      </template>
+
       <template #bottom>
         <div v-if="allFetched" class="text-center text-h6">
           No more transactions!
@@ -76,9 +89,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 
-import { getTransactions, getUsers, type Transaction } from "@/services/api";
+import {
+  getTransactions,
+  getUsers,
+  type Transaction,
+  getTransactionEventSource,
+} from "@/services/api";
 
 const minAmount = ref(1000);
 const maxAmount = ref(100_000);
@@ -94,6 +112,7 @@ const sentinel = ref<HTMLElement>();
 const allFetched = ref(false);
 
 let observer: IntersectionObserver | null = null;
+let eventSource: EventSource | null = null;
 
 const headers = [
   { title: "ID", key: "id" },
@@ -161,6 +180,13 @@ async function loadTransactions() {
       if (!response.transactions.length) {
         allFetched.value = true;
       }
+
+      eventSource = getTransactionEventSource(selectedUser.value!);
+
+      eventSource.onmessage = (event) => {
+        const newTransaction: Transaction = JSON.parse(event.data);
+        transactions.value.unshift(newTransaction);
+      };
     }
   } catch (error) {
     console.error("Failed to load transactions:", error);
@@ -168,4 +194,15 @@ async function loadTransactions() {
     isLoading.value = false;
   }
 }
+
+watch(selectedUser, () => {
+  cursor.value = undefined;
+  allFetched.value = false;
+  transactions.value = [];
+
+  if (eventSource) {
+    eventSource.close();
+    eventSource = null;
+  }
+});
 </script>

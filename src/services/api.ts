@@ -92,3 +92,9 @@ export async function getUsers(): Promise<string[] | undefined> {
     console.error("Error fetching users: ", err);
   }
 }
+
+export function getTransactionEventSource(userId: string): EventSource {
+  const url = `${BASE_URL}/sse/transactions/${userId}`;
+  const eventSource = new EventSource(url);
+  return eventSource;
+}
