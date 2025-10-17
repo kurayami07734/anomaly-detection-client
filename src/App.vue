@@ -17,11 +17,20 @@
       <v-alert
         v-if="!isHealthy"
         density="compact"
-        text="Please wait till server wakes up."
-        title="Server is down"
-        type="warning"
-        height="60"
-      />
+        title="Server is asleep, please wait..."
+        type="info"
+      >
+        <template #text>
+          Please wait till server wakes up.
+          <v-btn
+            variant="text"
+            href="https://anomaly-detection-server-0-0-1.onrender.com/"
+            target="_blank"
+          >
+            Still not loaded? Check server status here
+          </v-btn>
+        </template>
+      </v-alert>
 
       <TransactionTable v-else />
     </v-main>

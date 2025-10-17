@@ -1,9 +1,10 @@
 <template>
-  <v-chip flat :color="isHealthy ? 'green' : 'red'">
-    <v-progress-circular v-if="isLoading" size="16" />
-    <template v-else>
-      {{ isHealthy ? "Healthy" : "Service is down" }}
+  <v-chip flat :color="isHealthy && !isLoading ? 'green' : 'info'">
+    <template v-if="isLoading || !isHealthy">
+      <span class="mr-2"> Checking status </span>
+      <v-progress-circular indeterminate size="16" />
     </template>
+    <template v-else> Healthy </template>
   </v-chip>
 </template>
 
