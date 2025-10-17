@@ -18,8 +18,8 @@
         v-if="!isHealthy"
         density="compact"
         text="Please wait till server wakes up."
-        title="Server is down"
-        type="warning"
+        title="Server is asleep, please wait..."
+        type="info"
         height="60"
       />
 
